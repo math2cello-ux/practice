@@ -1,0 +1,28 @@
+{
+  "study_area": "Greater Boston approximation: Essex, Middlesex, Norfolk, Plymouth, and Suffolk counties.",
+  "created_outputs": [
+    "data/geojson/greater_boston_tracts.geojson",
+    "data/geojson/greater_boston_tracts_acs.geojson",
+    "data/geojson/greater_boston_tracts_acs_svi.geojson",
+    "data/geojson/greater_boston_ej_blockgroups.geojson",
+    "data/geojson/greater_boston_municipalities.geojson",
+    "data/geojson/greater_boston_ev_charging_stations.geojson",
+    "data/geojson/greater_boston_solar_pts_by_municipality.geojson"
+  ],
+  "sources": {
+    "tracts": "https://www2.census.gov/geo/tiger/GENZ2022/shp/cb_2022_25_tract_500k.zip",
+    "svi": "https://svi.cdc.gov/Documents/Data/2022/csv/states/Massachusetts.csv",
+    "ej": "https://s3.us-east-1.amazonaws.com/download.massgis.digital.mass.gov/shapefiles/census2020/ej2020.zip",
+    "municipalities": "https://s3.us-east-1.amazonaws.com/download.massgis.digital.mass.gov/shapefiles/state/townssurvey_shp.zip",
+    "masscec_pts_page": "https://www.masscec.com/production-tracking-system-pts",
+    "ev_arcgis": "https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/Alternative_Fueling_Stations/FeatureServer/0/query",
+    "census_reporter": "https://api.censusreporter.org/1.0/data/show/latest",
+    "lead_archive": "https://zenodo.org/records/14758685"
+  },
+  "notes": [
+    "ACS variables were downloaded from Census Reporter because the Census API required a key in this environment.",
+    "DOE LEAD 2022 is not downloaded by default because the official Zenodo archive is approximately 7.8 GB.",
+    "MassCEC PTS is downloaded as the official Excel file. Because it does not include project coordinates, the script creates a municipality-level GeoJSON summary.",
+    "MOR-EV and Mass Save are not included here because their public data are generally ZIP/town-level rather than tract-level GeoJSON."
+  ]
+}
