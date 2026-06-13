@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boston Energy Burden and Clean Energy Access</title>
+    <meta
+      name="description"
+      content="Research progress website for a Boston-area environmental project on energy burden, clean energy infrastructure, and equitable access."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="Main navigation">
+        <a class="brand" href="#top">Boston Energy Access</a>
+        <div class="nav-links">
+          <a href="#question">Question</a>
+          <a href="#progress">Progress</a>
+          <a href="#data">Data</a>
+          <a href="#next">Next Steps</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-content">
+          <p class="eyebrow">Environmental Research Portfolio</p>
+          <h1>Boston Energy Burden and Clean Energy Access</h1>
+          <p class="hero-copy">
+            This project investigates whether communities with higher household
+            energy burden receive fewer clean energy infrastructure and adoption
+            benefits across Greater Boston.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#progress">View Progress</a>
+            <a class="button secondary" href="#data">Explore Data Sources</a>
+          </div>
+        </div>
+
+        <div class="hero-panel" aria-label="Project snapshot">
+          <div class="metric">
+            <span class="metric-value">3</span>
+            <span class="metric-label">clean energy access modules</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">Tract</span>
+            <span class="metric-label">recommended analysis scale</span>
+          </div>
+          <div class="metric">
+            <span class="metric-value">2022</span>
+            <span class="metric-label">DOE LEAD archive baseline</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="question" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Research Framing</p>
+          <h2>Core Question</h2>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card wide">
+            <h3>Do high-energy-burden communities receive fewer benefits?</h3>
+            <p>
+              The strongest version of this project asks whether high-energy-
+              burden communities in the Boston area have lower access to clean
+              energy infrastructure and lower adoption of clean energy
+              technologies after accounting for income, housing tenure, building
+              type, vehicle access, and neighborhood characteristics.
+            </p>
+          </article>
+          <article class="feature-card">
+            <h3>Infrastructure</h3>
+            <p>
+              Public EV charging station counts, port counts, fast charging
+              availability, and distance to the nearest public charger.
+            </p>
+          </article>
+          <article class="feature-card">
+            <h3>Adoption</h3>
+            <p>
+              Residential solar installations, installed capacity, EV rebate
+              activity, and clean heating program uptake.
+            </p>
+          </article>
+          <article class="feature-card">
+            <h3>Equity Context</h3>
+            <p>
+              Energy burden, rentership, multifamily housing, vehicle access,
+              environmental justice status, and income.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="progress" class="section band">
+        <div class="section-heading">
+          <p class="eyebrow">What Has Been Accomplished</p>
+          <h2>Project Progress</h2>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item complete">
+            <span class="status-dot" aria-hidden="true"></span>
+            <div>
+              <h3>Research scope defined</h3>
+              <p>
+                The project now separates clean energy access into EV charging,
+                solar adoption, and program benefit uptake instead of treating
+                clean energy use as one broad variable.
+              </p>
+            </div>
+          </div>
+          <div class="timeline-item complete">
+            <span class="status-dot" aria-hidden="true"></span>
+            <div>
+              <h3>Key confounders identified</h3>
+              <p>
+                The plan recognizes that income, homeownership, renter status,
+                building type, and vehicle ownership may shape both energy
+                burden and clean energy adoption.
+              </p>
+            </div>
+          </div>
+          <div class="timeline-item active">
+            <span class="status-dot" aria-hidden="true"></span>
+            <div>
+              <h3>Data strategy assembled</h3>
+              <p>
+                A tract-level dataset is planned using DOE LEAD, ACS controls,
+                NREL or Massachusetts EV charger data, MassCEC solar records,
+                Mass Save data, and environmental justice layers.
+              </p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <span class="status-dot" aria-hidden="true"></span>
+            <div>
+              <h3>Analysis deliverables queued</h3>
+              <p>
+                The next deliverable is an exploratory Greater Boston tract
+                analysis with maps, regressions, and a policy memo.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Hypotheses</p>
+          <h2>What The Study Will Test</h2>
+        </div>
+        <div class="hypothesis-grid">
+          <article>
+            <span>H1</span>
+            <p>
+              Higher energy burden is associated with lower public EV charging
+              access.
+            </p>
+          </article>
+          <article>
+            <span>H2</span>
+            <p>
+              Higher energy burden is associated with lower residential solar
+              adoption.
+            </p>
+          </article>
+          <article>
+            <span>H3</span>
+            <p>
+              Homeownership, housing type, vehicle access, and income partly
+              explain the relationship.
+            </p>
+          </article>
+          <article>
+            <span>H4</span>
+            <p>
+              Heat pump and weatherization programs may be more equitably
+              distributed than EV and rooftop solar benefits.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="data" class="section band">
+        <div class="section-heading">
+          <p class="eyebrow">Evidence Base</p>
+          <h2>Core Data Sources</h2>
+        </div>
+        <div class="data-table" role="table" aria-label="Core data sources">
+          <div class="table-row table-head" role="row">
+            <div role="columnheader">Module</div>
+            <div role="columnheader">Dataset</div>
+            <div role="columnheader">Use</div>
+          </div>
+          <div class="table-row" role="row">
+            <div role="cell">Energy burden</div>
+            <div role="cell">DOE LEAD 2022 archive</div>
+            <div role="cell">Main burden variable and household context</div>
+          </div>
+          <div class="table-row" role="row">
+            <div role="cell">EV charging</div>
+            <div role="cell">NREL AFDC and Massachusetts EV Chargers</div>
+            <div role="cell">Public station, port, and fast charger access</div>
+          </div>
+          <div class="table-row" role="row">
+            <div role="cell">Solar adoption</div>
+            <div role="cell">MassCEC PTS and Boston building permits</div>
+            <div role="cell">Solar installation counts and installed capacity</div>
+          </div>
+          <div class="table-row" role="row">
+            <div role="cell">Programs</div>
+            <div role="cell">MOR-EV rebates and Mass Save data</div>
+            <div role="cell">EV rebate, heat pump, and weatherization uptake</div>
+          </div>
+          <div class="table-row" role="row">
+            <div role="cell">Controls</div>
+            <div role="cell">ACS, Census TIGER, MassGIS EJ populations</div>
+            <div role="cell">Socioeconomic, housing, vehicle, and equity context</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Methods</p>
+          <h2>Analysis Workflow</h2>
+        </div>
+        <div class="workflow">
+          <article>
+            <strong>1</strong>
+            <h3>Build tract dataset</h3>
+            <p>
+              Join DOE LEAD, ACS controls, tract boundaries, and environmental
+              justice classifications by GEOID.
+            </p>
+          </article>
+          <article>
+            <strong>2</strong>
+            <h3>Process spatial access</h3>
+            <p>
+              Spatially join charger and solar points to tracts and calculate
+              counts, rates, capacity, and nearest-charger distance.
+            </p>
+          </article>
+          <article>
+            <strong>3</strong>
+            <h3>Compare outcomes</h3>
+            <p>
+              Map energy burden, EV access, and solar adoption; compare high-
+              burden and low-burden tracts.
+            </p>
+          </article>
+          <article>
+            <strong>4</strong>
+            <h3>Model relationships</h3>
+            <p>
+              Estimate regression models with controls for income, rentership,
+              housing type, vehicle ownership, and density.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="next" class="section final-section">
+        <div>
+          <p class="eyebrow">Next Deliverable</p>
+          <h2>Greater Boston Exploratory Analysis</h2>
+          <p>
+            The first full deliverable will include a cleaned tract-level
+            dataset, three maps, regression tables, a targeting table for high-
+            burden and low-access tracts, and a short policy memo on whether
+            clean energy investments align with energy affordability needs.
+          </p>
+        </div>
+        <ul class="deliverables">
+          <li>Cleaned tract-level dataset</li>
+          <li>Energy burden, EV access, and solar adoption maps</li>
+          <li>Controlled regression tables</li>
+          <li>High-burden tract targeting table</li>
+          <li>Short equity-focused policy memo</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        Built for a Boston-area environmental research project on energy
+        affordability and clean energy equity.
+      </p>
+    </footer>
+  </body>
+</html>
