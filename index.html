@@ -18,6 +18,7 @@
           <a href="#question">Question</a>
           <a href="#progress">Progress</a>
           <a href="#data">Data</a>
+          <a href="#analysis">Analysis</a>
           <a href="#next">Next Steps</a>
         </div>
       </nav>
@@ -34,7 +35,8 @@
             benefits across Greater Boston.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#progress">View Progress</a>
+            <a class="button primary" href="map.html">Explore Interactive Map</a>
+            <a class="button secondary" href="#analysis">View First Analysis</a>
             <a class="button secondary" href="#data">Explore Data Sources</a>
           </div>
         </div>
@@ -126,11 +128,12 @@
           <div class="timeline-item active">
             <span class="status-dot" aria-hidden="true"></span>
             <div>
-              <h3>Data strategy assembled</h3>
+              <h3>Prototype map and data stack assembled</h3>
               <p>
-                A tract-level dataset is planned using DOE LEAD, ACS controls,
-                NREL or Massachusetts EV charger data, MassCEC solar records,
-                Mass Save data, and environmental justice layers.
+                The current MapLibre prototype combines ACS and SVI tract
+                context, Massachusetts EV charging stations, MassGIS
+                environmental justice block groups, and municipal MassCEC solar
+                summaries.
               </p>
             </div>
           </div>
@@ -143,6 +146,34 @@
                 analysis with maps, regressions, and a policy memo.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="analysis" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">First Tract Analysis</p>
+          <h2>Vulnerability and EV Charging Access</h2>
+          <p>
+            This first chart uses the derived tract analysis table to compare
+            socioeconomic vulnerability with public EV charging access. DOE LEAD
+            energy burden is the next data join, so SVI is used here as a
+            temporary equity-screening variable.
+          </p>
+        </div>
+        <div class="analysis-layout">
+          <div class="chart-panel">
+            <div id="accessChart" class="chart" role="img" aria-label="Scatterplot of tract vulnerability and EV charging access">
+              <p class="chart-status">Loading analysis data...</p>
+            </div>
+          </div>
+          <div class="ranking-panel">
+            <h3>High-vulnerability, low-access tracts</h3>
+            <p>
+              Ranked by higher SVI and longer distance to the nearest public EV
+              charging station.
+            </p>
+            <div class="ranking-table" id="targetTable" aria-live="polite"></div>
           </div>
         </div>
       </section>
@@ -291,5 +322,150 @@
         affordability and clean energy equity.
       </p>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script>
+      const analysisCsv = "data/analysis/greater_boston_tract_analysis.csv";
+      const chartEl = document.getElementById("accessChart");
+      const tableEl = document.getElementById("targetTable");
+
+      if (window.d3) {
+        d3.csv(analysisCsv, d3.autoType)
+          .then((rows) => {
+            const data = rows.filter(
+              (row) =>
+                Number.isFinite(row.svi_rpl_themes) &&
+                Number.isFinite(row.nearest_public_ev_station_miles)
+            );
+            renderAccessChart(data);
+            renderTargetTable(data);
+          })
+          .catch(() => {
+            chartEl.innerHTML =
+              '<p class="chart-status">Run <code>python3 scripts/build_tract_analysis.py</code> to create the analysis CSV.</p>';
+            tableEl.textContent = "Analysis table is not available yet.";
+          });
+      } else {
+        chartEl.innerHTML =
+          '<p class="chart-status">D3 could not load. Check the network connection and reload this page.</p>';
+        tableEl.textContent = "Chart library unavailable.";
+      }
+
+      function renderAccessChart(data) {
+        const width = 720;
+        const height = 420;
+        const margin = { top: 24, right: 28, bottom: 58, left: 68 };
+        chartEl.innerHTML = "";
+
+        const svg = d3
+          .select(chartEl)
+          .append("svg")
+          .attr("viewBox", `0 0 ${width} ${height}`)
+          .attr("role", "img");
+
+        const x = d3
+          .scaleLinear()
+          .domain([0, 1])
+          .range([margin.left, width - margin.right]);
+        const y = d3
+          .scaleLinear()
+          .domain([0, d3.quantile(data, 0.98, (d) => d.nearest_public_ev_station_miles) || 8])
+          .nice()
+          .range([height - margin.bottom, margin.top]);
+        const radius = d3
+          .scaleSqrt()
+          .domain([0, d3.max(data, (d) => d.public_ev_station_count) || 1])
+          .range([3, 11]);
+
+        svg
+          .append("g")
+          .attr("transform", `translate(0,${height - margin.bottom})`)
+          .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0%")));
+        svg
+          .append("g")
+          .attr("transform", `translate(${margin.left},0)`)
+          .call(d3.axisLeft(y).ticks(6));
+
+        svg
+          .append("g")
+          .attr("fill", "#287a9f")
+          .attr("fill-opacity", 0.58)
+          .attr("stroke", "#ffffff")
+          .attr("stroke-width", 0.8)
+          .selectAll("circle")
+          .data(data)
+          .join("circle")
+          .attr("cx", (d) => x(d.svi_rpl_themes))
+          .attr("cy", (d) => y(d.nearest_public_ev_station_miles))
+          .attr("r", (d) => radius(d.public_ev_station_count))
+          .append("title")
+          .text(
+            (d) =>
+              `${d.tract_name}, ${d.county}: ${percent(d.svi_rpl_themes)} SVI, ${number(d.nearest_public_ev_station_miles)} miles to nearest public EV station`
+          );
+
+        svg
+          .append("text")
+          .attr("x", width / 2)
+          .attr("y", height - 14)
+          .attr("text-anchor", "middle")
+          .attr("class", "axis-label")
+          .text("CDC Social Vulnerability Index percentile");
+        svg
+          .append("text")
+          .attr("x", -height / 2)
+          .attr("y", 18)
+          .attr("transform", "rotate(-90)")
+          .attr("text-anchor", "middle")
+          .attr("class", "axis-label")
+          .text("Miles to nearest public EV station");
+      }
+
+      function renderTargetTable(data) {
+        const rows = data
+          .filter((row) => row.svi_rpl_themes >= 0.75)
+          .sort(
+            (a, b) =>
+              b.nearest_public_ev_station_miles - a.nearest_public_ev_station_miles ||
+              b.svi_rpl_themes - a.svi_rpl_themes
+          )
+          .slice(0, 8);
+
+        tableEl.innerHTML = `
+          <div class="ranking-row ranking-head">
+            <span>Tract</span>
+            <span>SVI</span>
+            <span>Miles</span>
+          </div>
+          ${rows
+            .map(
+              (row) => `
+                <div class="ranking-row">
+                  <span>${escapeHtml(row.tract_name || row.GEOID)}</span>
+                  <span>${percent(row.svi_rpl_themes)}</span>
+                  <span>${number(row.nearest_public_ev_station_miles)}</span>
+                </div>
+              `
+            )
+            .join("")}
+        `;
+      }
+
+      function percent(value) {
+        return `${Math.round(Number(value) * 100)}%`;
+      }
+
+      function number(value) {
+        return new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(value);
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+    </script>
   </body>
 </html>

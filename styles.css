@@ -226,7 +226,9 @@ a {
 .timeline p,
 .hypothesis-grid p,
 .workflow p,
-.final-section p {
+.final-section p,
+.section-heading p:not(.eyebrow),
+.ranking-panel p {
   margin: 0;
   color: var(--muted);
 }
@@ -316,6 +318,76 @@ a {
   font-weight: 850;
 }
 
+.analysis-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.chart-panel,
+.ranking-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  padding: 20px;
+}
+
+.chart {
+  min-height: 360px;
+}
+
+.chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.axis-label {
+  fill: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.chart-status {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.ranking-panel h3 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+}
+
+.ranking-table {
+  display: grid;
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ranking-row {
+  display: grid;
+  grid-template-columns: 1fr 72px 72px;
+  gap: 10px;
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.ranking-row:last-child {
+  border-bottom: 0;
+}
+
+.ranking-head {
+  background: var(--green-dark);
+  color: white;
+}
+
 .final-section {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 0.65fr);
@@ -366,7 +438,8 @@ a {
   }
 
   .hero,
-  .final-section {
+  .final-section,
+  .analysis-layout {
     grid-template-columns: 1fr;
   }
 
