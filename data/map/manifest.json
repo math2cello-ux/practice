@@ -1,0 +1,35 @@
+{
+  "generated_by": "scripts/build_tract_analysis.py",
+  "primary_metric": "doe_lead_energy_burden",
+  "fallback_metric": "svi_rpl_themes",
+  "layers": [
+    {
+      "id": "tracts",
+      "path": "data/map/tracts_energy_access.geojson",
+      "default": true,
+      "features": 1028,
+      "bytes": 1746740
+    },
+    {
+      "id": "ev",
+      "path": "data/map/ev_stations.geojson",
+      "default": true,
+      "features": 3187,
+      "bytes": 1074179
+    },
+    {
+      "id": "solar",
+      "path": "data/map/solar_municipalities.geojson",
+      "default": false,
+      "features": 147,
+      "bytes": 4212100
+    },
+    {
+      "id": "ej",
+      "path": "data/map/ej_blockgroups.geojson",
+      "default": false,
+      "features": 1741,
+      "bytes": 3509887
+    }
+  ]
+}

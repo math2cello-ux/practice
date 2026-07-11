@@ -14,12 +14,41 @@ DATA = ROOT / "data"
 GEOJSON = DATA / "geojson"
 RAW = DATA / "raw"
 ANALYSIS = DATA / "analysis"
+MAP_DATA = DATA / "map"
 
 TRACTS_PATH = GEOJSON / "greater_boston_tracts_acs_svi.geojson"
 EV_PATH = GEOJSON / "greater_boston_ev_charging_stations.geojson"
+EJ_PATH = GEOJSON / "greater_boston_ej_blockgroups.geojson"
 SOLAR_PATH = GEOJSON / "greater_boston_solar_pts_by_municipality.geojson"
 DOE_LEAD_PATH = RAW / "doe_lead_2022_tracts.csv"
 OUT_PATH = ANALYSIS / "greater_boston_tract_analysis.csv"
+MAP_MANIFEST_PATH = MAP_DATA / "manifest.json"
+
+DOE_LEAD_FIELDS = [
+    "doe_lead_energy_burden",
+    "doe_lead_electricity_energy_burden",
+    "doe_lead_gas_energy_burden",
+    "doe_lead_other_energy_burden",
+    "doe_lead_avg_annual_energy_cost",
+    "doe_lead_electricity_annual_energy_cost",
+    "doe_lead_gas_annual_energy_cost",
+    "doe_lead_other_annual_energy_cost",
+    "doe_lead_total_households",
+    "doe_lead_household_income",
+]
+
+DOE_LEAD_FIELD_MAP = {
+    "energyburden%income": "doe_lead_energy_burden",
+    "energyburden%incomeelectricity": "doe_lead_electricity_energy_burden",
+    "energyburden%incomegas": "doe_lead_gas_energy_burden",
+    "energyburden%incomeother": "doe_lead_other_energy_burden",
+    "avgannualenergycost$": "doe_lead_avg_annual_energy_cost",
+    "avgannualenergycost$electricity": "doe_lead_electricity_annual_energy_cost",
+    "avgannualenergycost$gas": "doe_lead_gas_annual_energy_cost",
+    "avgannualenergycost$other": "doe_lead_other_annual_energy_cost",
+    "totalhouseholds": "doe_lead_total_households",
+    "householdincome": "doe_lead_household_income",
+}
 
 BASE_FIELDS = [
     "GEOID",
@@ -37,6 +66,7 @@ BASE_FIELDS = [
     "svi_rpl_theme2",
     "svi_rpl_theme3",
     "svi_rpl_theme4",
+    *DOE_LEAD_FIELDS,
     "public_ev_station_count",
     "public_dc_fast_station_count",
     "public_dc_fast_port_count",
@@ -51,8 +81,10 @@ BASE_FIELDS = [
 
 def main() -> int:
     ANALYSIS.mkdir(parents=True, exist_ok=True)
+    MAP_DATA.mkdir(parents=True, exist_ok=True)
     tracts = load_geojson(TRACTS_PATH)["features"]
     ev_stations = load_geojson(EV_PATH)["features"]
+    ej_blockgroups = load_geojson(EJ_PATH)["features"]
     solar_municipalities = load_geojson(SOLAR_PATH)["features"]
 
     rows = [base_row(feature) for feature in tracts]
@@ -63,9 +95,10 @@ def main() -> int:
     public_points = assign_ev_access(rows, tract_indexes, ev_stations)
     assign_nearest_public_ev(rows, tract_indexes, public_points)
 
-    doe_fields = join_doe_lead(rows)
-    write_csv(rows, BASE_FIELDS + doe_fields, OUT_PATH)
+    join_doe_lead(rows)
+    write_csv(rows, BASE_FIELDS, OUT_PATH)
     print(f"wrote   {OUT_PATH} ({len(rows):,} rows)")
+    write_map_outputs(rows, tracts, ev_stations, ej_blockgroups, solar_municipalities)
     return 0
 
 
@@ -91,6 +124,7 @@ def base_row(feature: dict) -> dict:
         "svi_rpl_theme2": props.get("svi_rpl_theme2"),
         "svi_rpl_theme3": props.get("svi_rpl_theme3"),
         "svi_rpl_theme4": props.get("svi_rpl_theme4"),
+        **{field: "" for field in DOE_LEAD_FIELDS},
         "public_ev_station_count": 0,
         "public_dc_fast_station_count": 0,
         "public_dc_fast_port_count": 0,
@@ -274,38 +308,69 @@ def join_doe_lead(rows: list[dict]) -> list[str]:
     if not DOE_LEAD_PATH.exists():
         return []
 
-    with DOE_LEAD_PATH.open(newline="") as f:
-        reader = csv.DictReader(f)
-        if not reader.fieldnames:
-            return []
-        geoid_field = find_geoid_field(reader.fieldnames)
-        if not geoid_field:
-            return []
-        lead_rows = {normalize_geoid(row[geoid_field]): row for row in reader}
+    lead_source_rows, fieldnames = open_lead_reader(DOE_LEAD_PATH)
+    if not fieldnames:
+        return []
+    geoid_field = find_geoid_field(fieldnames)
+    if not geoid_field:
+        return []
 
-    lead_fields = [
-        f"doe_lead_{field}"
-        for field in reader.fieldnames
-        if field != geoid_field
-    ]
+    lead_rows = {}
+    for row in lead_source_rows:
+        geoid = normalize_geoid(row.get(geoid_field))
+        if geoid and geoid != "00000000000":
+            lead_rows[geoid] = row
+
     for row in rows:
         lead = lead_rows.get(normalize_geoid(row["GEOID"]))
         if not lead:
+            row["doe_lead_join_status"] = "missing_geoid"
             continue
         row["doe_lead_join_status"] = "joined"
-        for source_field, out_field in zip(
-            [field for field in reader.fieldnames if field != geoid_field], lead_fields
-        ):
-            row[out_field] = lead.get(source_field, "")
-    return lead_fields
+        for source_field in fieldnames:
+            out_field = DOE_LEAD_FIELD_MAP.get(normalize_field_name(source_field))
+            if out_field:
+                row[out_field] = clean_lead_value(lead.get(source_field))
+    return DOE_LEAD_FIELDS
+
+
+def open_lead_reader(path: Path) -> tuple[list[dict], list[str]]:
+    with path.open(newline="") as f:
+        rows = list(csv.reader(f))
+
+    header_index = next(
+        (
+            index
+            for index, row in enumerate(rows)
+            if find_geoid_field(row) and any("energy burden" in col.lower() for col in row)
+        ),
+        None,
+    )
+    if header_index is None:
+        return [], []
+    fieldnames = rows[header_index]
+    data_rows = [dict(zip(fieldnames, row)) for row in rows[header_index + 1 :] if row]
+    return data_rows, fieldnames
 
 
 def find_geoid_field(fields: list[str]) -> str | None:
-    normalized = {field.lower().replace("_", ""): field for field in fields}
-    for candidate in ("geoid", "tractgeoid", "censustract", "fips"):
+    normalized = {normalize_field_name(field): field for field in fields}
+    for candidate in ("geoid", "tractgeoid", "censustract", "fips", "geographyid"):
         if candidate in normalized:
             return normalized[candidate]
     return None
+
+
+def normalize_field_name(value: str) -> str:
+    return (
+        str(value or "")
+        .lower()
+        .replace("_", "")
+        .replace(" ", "")
+        .replace(".", "")
+        .replace("(", "")
+        .replace(")", "")
+    )
 
 
 def normalize_geoid(value) -> str:
@@ -313,6 +378,193 @@ def normalize_geoid(value) -> str:
     if text.endswith(".0"):
         text = text[:-2]
     return text.zfill(11)
+
+
+def clean_lead_value(value):
+    if value in (None, "", "-"):
+        return ""
+    text = str(value).replace(",", "").strip()
+    try:
+        number = float(text)
+    except ValueError:
+        return value
+    if number.is_integer():
+        return int(number)
+    return number
+
+
+def write_map_outputs(
+    rows: list[dict],
+    tracts: list[dict],
+    ev_stations: list[dict],
+    ej_blockgroups: list[dict],
+    solar_municipalities: list[dict],
+) -> None:
+    row_lookup = {row["GEOID"]: row for row in rows}
+    outputs = [
+        write_map_geojson(
+            "tracts",
+            [
+                {
+                    "type": "Feature",
+                    "properties": map_tract_properties(row_lookup[tract_geoid_from_feature(feature)]),
+                    "geometry": round_geometry(feature["geometry"]),
+                }
+                for feature in tracts
+                if tract_geoid_from_feature(feature) in row_lookup
+            ],
+            "tracts_energy_access.geojson",
+            default=True,
+        ),
+        write_map_geojson(
+            "ev",
+            [compact_ev_feature(feature) for feature in ev_stations],
+            "ev_stations.geojson",
+            default=True,
+        ),
+        write_map_geojson(
+            "solar",
+            [compact_solar_feature(feature) for feature in solar_municipalities],
+            "solar_municipalities.geojson",
+            default=False,
+        ),
+        write_map_geojson(
+            "ej",
+            [compact_ej_feature(feature) for feature in ej_blockgroups],
+            "ej_blockgroups.geojson",
+            default=False,
+        ),
+    ]
+    manifest = {
+        "generated_by": "scripts/build_tract_analysis.py",
+        "primary_metric": "doe_lead_energy_burden",
+        "fallback_metric": "svi_rpl_themes",
+        "layers": outputs,
+    }
+    MAP_MANIFEST_PATH.write_text(json.dumps(manifest, indent=2))
+    print(f"wrote   {MAP_MANIFEST_PATH}")
+
+
+def write_map_geojson(
+    layer_id: str,
+    features: list[dict],
+    filename: str,
+    default: bool,
+) -> dict:
+    path = MAP_DATA / filename
+    collection = {"type": "FeatureCollection", "features": features}
+    path.write_text(json.dumps(collection, separators=(",", ":"), allow_nan=False))
+    print(f"wrote   {path} ({len(features):,} features)")
+    return {
+        "id": layer_id,
+        "path": str(path.relative_to(ROOT)),
+        "default": default,
+        "features": len(features),
+        "bytes": path.stat().st_size,
+    }
+
+
+def map_tract_properties(row: dict) -> dict:
+    fields = [
+        "GEOID",
+        "tract_name",
+        "county",
+        "population",
+        "median_household_income",
+        "poverty_rate",
+        "renter_rate",
+        "no_vehicle_rate",
+        "multifamily_share",
+        "rent_burdened_share",
+        "svi_rpl_themes",
+        *DOE_LEAD_FIELDS,
+        "public_ev_station_count",
+        "public_dc_fast_station_count",
+        "public_dc_fast_port_count",
+        "nearest_public_ev_station_miles",
+        "solar_proxy_municipality",
+        "municipal_solar_project_count",
+        "municipal_residential_solar_project_count",
+        "municipal_solar_capacity_dc_mw",
+        "doe_lead_join_status",
+    ]
+    return {field: row.get(field, "") for field in fields}
+
+
+def compact_ev_feature(feature: dict) -> dict:
+    props = feature.get("properties", {})
+    keep = [
+        "station_name",
+        "street_address",
+        "city",
+        "zip",
+        "ev_network",
+        "ev_level2_evse_num",
+        "ev_dc_fast_num",
+        "groups_with_access_code",
+        "status_code",
+    ]
+    return {
+        "type": "Feature",
+        "properties": {field: props.get(field, "") for field in keep},
+        "geometry": round_geometry(feature["geometry"]),
+    }
+
+
+def compact_solar_feature(feature: dict) -> dict:
+    props = feature.get("properties", {})
+    keep = [
+        "TOWN",
+        "COUNTY",
+        "solar_project_count",
+        "residential_solar_project_count",
+        "solar_capacity_dc_mw",
+        "estimated_annual_production_kwh",
+    ]
+    return {
+        "type": "Feature",
+        "properties": {field: props.get(field, "") for field in keep},
+        "geometry": round_geometry(feature["geometry"]),
+    }
+
+
+def compact_ej_feature(feature: dict) -> dict:
+    props = feature.get("properties", {})
+    keep = [
+        "GEOGRAPHIC",
+        "GEOID",
+        "MUNICIPALI",
+        "EJ",
+        "EJ_CRIT_DE",
+        "PCT_MINORI",
+        "BG_MHHI",
+    ]
+    return {
+        "type": "Feature",
+        "properties": {field: props.get(field, "") for field in keep},
+        "geometry": round_geometry(feature["geometry"]),
+    }
+
+
+def round_geometry(geometry: dict) -> dict:
+    return {
+        "type": geometry["type"],
+        "coordinates": round_coords(geometry["coordinates"]),
+    }
+
+
+def round_coords(coords):
+    if not coords:
+        return coords
+    first = coords[0]
+    if isinstance(first, (int, float)):
+        return [round(float(coords[0]), 5), round(float(coords[1]), 5)]
+    return [round_coords(item) for item in coords]
+
+
+def tract_geoid_from_feature(feature: dict) -> str:
+    props = feature["properties"]
+    return str(props.get("GEOID") or props.get("GEOID20") or props.get("geoid"))
 
 
 def write_csv(rows: list[dict], fields: list[str], path: Path) -> None:

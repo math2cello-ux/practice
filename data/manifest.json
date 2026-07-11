@@ -7,7 +7,13 @@
     "data/geojson/greater_boston_ej_blockgroups.geojson",
     "data/geojson/greater_boston_municipalities.geojson",
     "data/geojson/greater_boston_ev_charging_stations.geojson",
-    "data/geojson/greater_boston_solar_pts_by_municipality.geojson"
+    "data/geojson/greater_boston_solar_pts_by_municipality.geojson",
+    "data/analysis/greater_boston_tract_analysis.csv",
+    "data/map/manifest.json",
+    "data/map/tracts_energy_access.geojson",
+    "data/map/ev_stations.geojson",
+    "data/map/solar_municipalities.geojson",
+    "data/map/ej_blockgroups.geojson"
   ],
   "sources": {
     "tracts": "https://www2.census.gov/geo/tiger/GENZ2022/shp/cb_2022_25_tract_500k.zip",
@@ -21,7 +27,8 @@
   },
   "notes": [
     "ACS variables were downloaded from Census Reporter because the Census API required a key in this environment.",
-    "DOE LEAD 2022 is not downloaded by default because the official Zenodo archive is approximately 7.8 GB.",
+    "DOE LEAD 2022 is not downloaded by default because the official Zenodo archive is approximately 7.8 GB. The analysis builder accepts a tract-level export at data/raw/doe_lead_2022_tracts.csv.",
+    "Map-facing layers are written to data/map with display fields only so the browser does not load every source attribute.",
     "MassCEC PTS is downloaded as the official Excel file. Because it does not include project coordinates, the script creates a municipality-level GeoJSON summary.",
     "MOR-EV and Mass Save are not included here because their public data are generally ZIP/town-level rather than tract-level GeoJSON."
   ]

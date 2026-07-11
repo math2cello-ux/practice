@@ -130,10 +130,10 @@
             <div>
               <h3>Prototype map and data stack assembled</h3>
               <p>
-                The current MapLibre prototype combines ACS and SVI tract
-                context, Massachusetts EV charging stations, MassGIS
-                environmental justice block groups, and municipal MassCEC solar
-                summaries.
+                The current MapLibre prototype combines DOE LEAD energy burden,
+                ACS and SVI tract context, Massachusetts EV charging stations,
+                MassGIS environmental justice block groups, and municipal
+                MassCEC solar summaries.
               </p>
             </div>
           </div>
@@ -153,25 +153,25 @@
       <section id="analysis" class="section">
         <div class="section-heading">
           <p class="eyebrow">First Tract Analysis</p>
-          <h2>Vulnerability and EV Charging Access</h2>
+          <h2>Energy Burden and EV Charging Access</h2>
           <p>
             This first chart uses the derived tract analysis table to compare
-            socioeconomic vulnerability with public EV charging access. DOE LEAD
-            energy burden is the next data join, so SVI is used here as a
-            temporary equity-screening variable.
+            DOE LEAD household energy burden with public EV charging access.
+            SVI, ACS housing, and income variables remain available as controls
+            and equity context.
           </p>
         </div>
         <div class="analysis-layout">
           <div class="chart-panel">
-            <div id="accessChart" class="chart" role="img" aria-label="Scatterplot of tract vulnerability and EV charging access">
+            <div id="accessChart" class="chart" role="img" aria-label="Scatterplot of tract energy burden and EV charging access">
               <p class="chart-status">Loading analysis data...</p>
             </div>
           </div>
           <div class="ranking-panel">
-            <h3>High-vulnerability, low-access tracts</h3>
+            <h3>High-burden, low-access tracts</h3>
             <p>
-              Ranked by higher SVI and longer distance to the nearest public EV
-              charging station.
+              Ranked by higher DOE LEAD energy burden and longer distance to
+              the nearest public EV charging station.
             </p>
             <div class="ranking-table" id="targetTable" aria-live="polite"></div>
           </div>
@@ -333,7 +333,7 @@
           .then((rows) => {
             const data = rows.filter(
               (row) =>
-                Number.isFinite(row.svi_rpl_themes) &&
+                Number.isFinite(row.doe_lead_energy_burden) &&
                 Number.isFinite(row.nearest_public_ev_station_miles)
             );
             renderAccessChart(data);
@@ -364,7 +364,8 @@
 
         const x = d3
           .scaleLinear()
-          .domain([0, 1])
+          .domain([0, d3.quantile(data, 0.98, (d) => d.doe_lead_energy_burden) || 12])
+          .nice()
           .range([margin.left, width - margin.right]);
         const y = d3
           .scaleLinear()
@@ -379,7 +380,7 @@
         svg
           .append("g")
           .attr("transform", `translate(0,${height - margin.bottom})`)
-          .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0%")));
+          .call(d3.axisBottom(x).ticks(6).tickFormat((d) => `${d}%`));
         svg
           .append("g")
           .attr("transform", `translate(${margin.left},0)`)
@@ -394,13 +395,13 @@
           .selectAll("circle")
           .data(data)
           .join("circle")
-          .attr("cx", (d) => x(d.svi_rpl_themes))
+          .attr("cx", (d) => x(d.doe_lead_energy_burden))
           .attr("cy", (d) => y(d.nearest_public_ev_station_miles))
           .attr("r", (d) => radius(d.public_ev_station_count))
           .append("title")
           .text(
             (d) =>
-              `${d.tract_name}, ${d.county}: ${percent(d.svi_rpl_themes)} SVI, ${number(d.nearest_public_ev_station_miles)} miles to nearest public EV station`
+              `${d.tract_name}, ${d.county}: ${percentWhole(d.doe_lead_energy_burden)} energy burden, ${number(d.nearest_public_ev_station_miles)} miles to nearest public EV station`
           );
 
         svg
@@ -409,7 +410,7 @@
           .attr("y", height - 14)
           .attr("text-anchor", "middle")
           .attr("class", "axis-label")
-          .text("CDC Social Vulnerability Index percentile");
+          .text("DOE LEAD energy burden (% household income)");
         svg
           .append("text")
           .attr("x", -height / 2)
@@ -422,18 +423,18 @@
 
       function renderTargetTable(data) {
         const rows = data
-          .filter((row) => row.svi_rpl_themes >= 0.75)
           .sort(
             (a, b) =>
-              b.nearest_public_ev_station_miles - a.nearest_public_ev_station_miles ||
-              b.svi_rpl_themes - a.svi_rpl_themes
+              b.doe_lead_energy_burden * 2 +
+                b.nearest_public_ev_station_miles -
+                (a.doe_lead_energy_burden * 2 + a.nearest_public_ev_station_miles)
           )
           .slice(0, 8);
 
         tableEl.innerHTML = `
           <div class="ranking-row ranking-head">
             <span>Tract</span>
-            <span>SVI</span>
+            <span>Burden</span>
             <span>Miles</span>
           </div>
           ${rows
@@ -441,7 +442,7 @@
               (row) => `
                 <div class="ranking-row">
                   <span>${escapeHtml(row.tract_name || row.GEOID)}</span>
-                  <span>${percent(row.svi_rpl_themes)}</span>
+                  <span>${percentWhole(row.doe_lead_energy_burden)}</span>
                   <span>${number(row.nearest_public_ev_station_miles)}</span>
                 </div>
               `
@@ -450,8 +451,10 @@
         `;
       }
 
-      function percent(value) {
-        return `${Math.round(Number(value) * 100)}%`;
+      function percentWhole(value) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) return "No data";
+        return `${number.toFixed(number % 1 === 0 ? 0 : 1)}%`;
       }
 
       function number(value) {

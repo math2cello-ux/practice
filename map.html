@@ -11,14 +11,14 @@
     <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
     <style>
       :root {
-        --ink: #1d2f2b;
-        --muted: #61716d;
-        --line: #dce4df;
-        --panel: rgba(255, 255, 255, 0.94);
-        --green: #28784e;
+        --ink: #17211f;
+        --muted: #64716d;
+        --line: #dce3df;
+        --panel: rgba(255, 255, 255, 0.96);
+        --green: #276148;
         --blue: #287a9f;
-        --gold: #d59b2d;
-        --rose: #b84d5d;
+        --gold: #c88a22;
+        --rose: #aa4858;
       }
 
       * {
@@ -39,75 +39,128 @@
 
       .panel {
         position: absolute;
-        top: 16px;
-        left: 16px;
+        top: 14px;
+        left: 14px;
         z-index: 2;
-        width: min(380px, calc(100vw - 32px));
-        max-height: calc(100vh - 32px);
+        width: min(390px, calc(100vw - 28px));
+        max-height: calc(100vh - 28px);
         overflow: auto;
         border: 1px solid var(--line);
         border-radius: 8px;
         background: var(--panel);
-        box-shadow: 0 18px 40px rgba(29, 47, 43, 0.16);
-        backdrop-filter: blur(14px);
+        box-shadow: 0 16px 36px rgba(23, 33, 31, 0.14);
       }
 
-      .panel-header {
-        padding: 18px 18px 14px;
+      .panel > * {
+        padding: 14px 16px;
         border-bottom: 1px solid var(--line);
       }
 
-      .eyebrow {
-        margin: 0 0 6px;
-        color: var(--green);
-        font-size: 0.72rem;
-        font-weight: 850;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-      }
-
-      h1 {
-        margin: 0;
-        font-size: 1.35rem;
-        line-height: 1.15;
-      }
-
-      .panel-header p:last-child {
-        margin: 10px 0 0;
-        color: var(--muted);
-        font-size: 0.92rem;
-        line-height: 1.45;
-      }
-
-      .control-section {
-        padding: 15px 18px;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .control-section:last-child {
+      .panel > *:last-child {
         border-bottom: 0;
       }
 
-      .section-title {
-        display: block;
-        margin-bottom: 10px;
+      .panel-header {
+        display: grid;
+        gap: 8px;
+      }
+
+      .panel-header a {
+        width: max-content;
+        color: var(--green);
+        font-size: 0.86rem;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 1.28rem;
+        line-height: 1.15;
+      }
+
+      h2 {
         font-size: 0.78rem;
-        font-weight: 850;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
       }
 
-      .row {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 10px;
-        align-items: center;
-        margin: 10px 0;
+      h3 {
+        font-size: 0.95rem;
       }
 
-      label {
+      p,
+      label,
+      .small {
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.42;
+      }
+
+      .control-group {
+        display: grid;
+        gap: 12px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field label,
+      .toggle label {
         color: var(--ink);
-        font-size: 0.92rem;
-        font-weight: 700;
+        font-weight: 750;
+      }
+
+      select,
+      input[type="search"] {
+        width: 100%;
+        min-height: 38px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        padding: 0 10px;
+        font: inherit;
+      }
+
+      input[type="range"] {
+        width: 100%;
+      }
+
+      button {
+        min-height: 36px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--green);
+        font: inherit;
+        font-weight: 850;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--green);
+      }
+
+      .search-row {
+        display: grid;
+        grid-template-columns: 1fr 72px;
+        gap: 8px;
+      }
+
+      .toggle {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
       }
 
       input[type="checkbox"] {
@@ -116,66 +169,86 @@
         accent-color: var(--green);
       }
 
-      input[type="range"],
-      select {
-        width: 100%;
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 10px;
       }
 
-      select {
-        min-height: 38px;
+      .summary-item {
         border: 1px solid var(--line);
         border-radius: 8px;
-        background: white;
+        padding: 9px;
+      }
+
+      .summary-value {
+        display: block;
         color: var(--ink);
-        padding: 0 10px;
-        font: inherit;
-        font-size: 0.92rem;
-        font-weight: 700;
+        font-size: 1.05rem;
+        font-weight: 900;
+      }
+
+      .summary-label {
+        display: block;
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+
+      .ranking {
+        display: grid;
+        gap: 7px;
+        margin-top: 10px;
+      }
+
+      .ranking button {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        width: 100%;
+        min-height: 0;
+        padding: 8px 9px;
+        text-align: left;
+      }
+
+      .ranking span:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .legend {
         display: grid;
-        gap: 8px;
+        gap: 7px;
       }
 
       .legend-row {
         display: grid;
         grid-template-columns: 18px 1fr;
-        gap: 9px;
+        gap: 8px;
         align-items: center;
         color: var(--muted);
-        font-size: 0.86rem;
+        font-size: 0.82rem;
       }
 
       .swatch {
         width: 18px;
         height: 18px;
-        border: 1px solid rgba(0, 0, 0, 0.14);
+        border: 1px solid rgba(0, 0, 0, 0.16);
         border-radius: 4px;
-      }
-
-      .map-note {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.86rem;
-        line-height: 1.45;
-      }
-
-      .map-note strong {
-        color: var(--ink);
       }
 
       .status {
         position: absolute;
-        right: 16px;
-        bottom: 24px;
+        right: 14px;
+        bottom: 22px;
         z-index: 2;
-        max-width: min(420px, calc(100vw - 32px));
+        max-width: min(420px, calc(100vw - 28px));
         border-radius: 8px;
-        background: rgba(29, 47, 43, 0.88);
-        color: white;
+        background: rgba(23, 33, 31, 0.9);
+        color: #fff;
         padding: 10px 12px;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
       }
 
       .status.hidden {
@@ -184,14 +257,14 @@
 
       .maplibregl-popup-content {
         border-radius: 8px;
-        padding: 12px 14px;
         color: var(--ink);
-        box-shadow: 0 14px 36px rgba(29, 47, 43, 0.18);
+        padding: 12px 14px;
+        box-shadow: 0 14px 34px rgba(23, 33, 31, 0.16);
       }
 
       .popup-title {
-        margin: 0 0 8px;
-        font-weight: 850;
+        margin-bottom: 8px;
+        font-weight: 900;
       }
 
       .popup-row {
@@ -199,7 +272,7 @@
         grid-template-columns: 150px 1fr;
         gap: 8px;
         margin: 4px 0;
-        font-size: 0.88rem;
+        font-size: 0.86rem;
       }
 
       .popup-row span:first-child {
@@ -211,7 +284,7 @@
           top: 10px;
           left: 10px;
           width: calc(100vw - 20px);
-          max-height: 48vh;
+          max-height: 54vh;
         }
 
         .status {
@@ -226,117 +299,125 @@
     <div id="map" aria-label="Greater Boston clean energy equity map"></div>
 
     <aside class="panel" aria-label="Map controls">
-      <div class="panel-header">
-        <p class="eyebrow">Greater Boston</p>
+      <section class="panel-header">
+        <a href="index.html">Back to research page</a>
         <h1>Clean Energy Equity Map</h1>
         <p>
-          Visualize socioeconomic vulnerability, environmental justice block
-          groups, EV charging stations, and municipal solar adoption.
+          DOE LEAD energy burden, EV charging access, solar adoption, and
+          environmental justice context for Greater Boston census tracts.
         </p>
-      </div>
+      </section>
 
-      <div class="control-section">
-        <span class="section-title">Tract Choropleth</span>
-        <select id="tractMetric">
-          <option value="svi_rpl_themes">Social Vulnerability Index</option>
-          <option value="poverty_rate">Poverty Rate</option>
-          <option value="renter_rate">Renter Rate</option>
-          <option value="no_vehicle_rate">No Vehicle Rate</option>
-          <option value="median_household_income">Median Household Income</option>
-          <option value="multifamily_share">Multifamily Housing Share</option>
-        </select>
-        <div class="row">
-          <label for="tractsToggle">Show census tracts</label>
+      <section class="control-group">
+        <h2>Explore</h2>
+        <div class="field">
+          <label for="tractMetric">Tract metric</label>
+          <select id="tractMetric"></select>
+        </div>
+        <div class="field">
+          <label for="tractSearch">Find tract</label>
+          <div class="search-row">
+            <input id="tractSearch" type="search" list="tractOptions" />
+            <button id="searchButton" type="button">Find</button>
+          </div>
+          <datalist id="tractOptions"></datalist>
+        </div>
+        <div class="field">
+          <label for="tractOpacity">Tract opacity</label>
+          <input id="tractOpacity" type="range" min="0" max="1" step="0.05" value="0.72" />
+        </div>
+      </section>
+
+      <section class="control-group">
+        <h2>Layers</h2>
+        <div class="toggle">
+          <label for="tractsToggle">Census tracts</label>
           <input id="tractsToggle" type="checkbox" checked />
         </div>
-        <input
-          id="tractOpacity"
-          type="range"
-          min="0"
-          max="1"
-          step="0.05"
-          value="0.68"
-          aria-label="Census tract opacity"
-        />
-      </div>
-
-      <div class="control-section">
-        <span class="section-title">Energy Layers</span>
-        <div class="row">
+        <div class="toggle">
           <label for="evToggle">EV charging stations</label>
           <input id="evToggle" type="checkbox" checked />
         </div>
-        <div class="row">
+        <div class="toggle">
           <label for="solarToggle">Municipal solar adoption</label>
-          <input id="solarToggle" type="checkbox" checked />
+          <input id="solarToggle" type="checkbox" />
         </div>
-        <div class="row">
+        <div class="toggle">
           <label for="ejToggle">Environmental justice block groups</label>
-          <input id="ejToggle" type="checkbox" checked />
+          <input id="ejToggle" type="checkbox" />
         </div>
-      </div>
+      </section>
 
-      <div class="control-section">
-        <span class="section-title">Current Status</span>
-        <p class="map-note">
-          <strong>DOE LEAD energy burden is not joined yet.</strong> This
-          prototype uses ACS and CDC SVI tract variables as interim equity
-          context while the large DOE LEAD archive is prepared manually.
-        </p>
-      </div>
+      <section>
+        <h2>Selected Tract</h2>
+        <div id="selectedSummary">
+          <p class="small">Click a tract or search by tract name.</p>
+        </div>
+      </section>
 
-      <div class="control-section">
-        <span class="section-title">Legend</span>
+      <section>
+        <h2>High Burden + Low Access</h2>
+        <div id="ranking" class="ranking"></div>
+      </section>
+
+      <section>
+        <h2>Legend</h2>
         <div id="legend" class="legend"></div>
-      </div>
+      </section>
     </aside>
 
-    <div id="status" class="status">Loading GeoJSON layers...</div>
+    <div id="status" class="status">Loading map data...</div>
 
     <script>
-      const files = {
-        tracts: "data/geojson/greater_boston_tracts_acs_svi.geojson",
-        ev: "data/geojson/greater_boston_ev_charging_stations.geojson",
-        ej: "data/geojson/greater_boston_ej_blockgroups.geojson",
-        solar: "data/geojson/greater_boston_solar_pts_by_municipality.geojson",
-      };
+      const manifestPath = "data/map/manifest.json";
+      const layerState = {};
+      let manifest;
+      let tractData;
+      let activeMetric = "doe_lead_energy_burden";
+      let selectedFeature = null;
 
-      const tractMetrics = {
+      const metrics = {
+        doe_lead_energy_burden: {
+          label: "DOE LEAD energy burden",
+          format: percentWhole,
+          stops: [0, 2, 4, 6, 8, 12],
+          colors: ["#f7fbf7", "#dcebdd", "#a7cfa4", "#68a877", "#2f7d55", "#8b3f42"],
+        },
+        doe_lead_avg_annual_energy_cost: {
+          label: "DOE LEAD annual energy cost",
+          format: currency,
+          stops: [0, 1500, 2500, 3500, 4500, 6000],
+          colors: ["#f7fbf7", "#dcebdd", "#a7cfa4", "#68a877", "#c88a22", "#8b3f42"],
+        },
+        nearest_public_ev_station_miles: {
+          label: "Miles to nearest public EV charger",
+          format: miles,
+          stops: [0, 0.5, 1, 2, 4, 8],
+          colors: ["#f7fbf7", "#d7eced", "#9fd1d5", "#5aa8b3", "#287a9f", "#1d5068"],
+        },
+        public_ev_station_count: {
+          label: "Public EV stations in tract",
+          format: number,
+          stops: [0, 1, 3, 6, 10, 20],
+          colors: ["#f7fbf7", "#d7eced", "#9fd1d5", "#5aa8b3", "#287a9f", "#1d5068"],
+        },
+        municipal_solar_capacity_dc_mw: {
+          label: "Municipal solar capacity",
+          format: (value) => `${number(value)} MW`,
+          stops: [0, 10, 25, 50, 100, 160],
+          colors: ["#f7fbf7", "#f4e8bd", "#e6c16a", "#c88a22", "#9a641a", "#704511"],
+        },
         svi_rpl_themes: {
-          label: "Social Vulnerability Index",
+          label: "CDC Social Vulnerability Index",
           format: percentRank,
-          stops: [0, 0.25, 0.5, 0.75, 1],
-          colors: ["#f7fbf7", "#d9ead9", "#95c99b", "#4c9a68", "#16643f"],
-        },
-        poverty_rate: {
-          label: "Poverty Rate",
-          format: percent,
-          stops: [0, 0.1, 0.2, 0.35, 0.5],
-          colors: ["#f7fbf7", "#d9ead9", "#95c99b", "#4c9a68", "#16643f"],
-        },
-        renter_rate: {
-          label: "Renter Rate",
-          format: percent,
-          stops: [0, 0.25, 0.5, 0.75, 1],
-          colors: ["#f7fbf7", "#d9ead9", "#95c99b", "#4c9a68", "#16643f"],
-        },
-        no_vehicle_rate: {
-          label: "No Vehicle Rate",
-          format: percent,
-          stops: [0, 0.1, 0.2, 0.35, 0.5],
-          colors: ["#f7fbf7", "#d9ead9", "#95c99b", "#4c9a68", "#16643f"],
+          stops: [0, 0.25, 0.5, 0.75, 0.9, 1],
+          colors: ["#f7fbf7", "#dcebdd", "#a7cfa4", "#68a877", "#2f7d55", "#184832"],
         },
         median_household_income: {
-          label: "Median Household Income",
+          label: "Median household income",
           format: currency,
-          stops: [30000, 60000, 90000, 130000, 180000],
-          colors: ["#16643f", "#4c9a68", "#d9ead9", "#f1c36d", "#b86b2d"],
-        },
-        multifamily_share: {
-          label: "Multifamily Housing Share",
-          format: percent,
-          stops: [0, 0.25, 0.5, 0.75, 1],
-          colors: ["#f7fbf7", "#d9ead9", "#95c99b", "#4c9a68", "#16643f"],
+          stops: [30000, 60000, 90000, 130000, 180000, 240000],
+          colors: ["#8b3f42", "#c88a22", "#e8cf89", "#dcebdd", "#68a877", "#276148"],
         },
       };
 
@@ -352,128 +433,70 @@
       map.addControl(new maplibregl.ScaleControl({ unit: "imperial" }), "bottom-left");
 
       const statusEl = document.getElementById("status");
+      const metricEl = document.getElementById("tractMetric");
       const legendEl = document.getElementById("legend");
-      const tractMetricEl = document.getElementById("tractMetric");
+      const rankingEl = document.getElementById("ranking");
+      const selectedSummaryEl = document.getElementById("selectedSummary");
+      const searchEl = document.getElementById("tractSearch");
+      const tractOptionsEl = document.getElementById("tractOptions");
 
-      let activeTractMetric = tractMetricEl.value;
+      map.on("load", initialize);
 
-      map.on("load", async () => {
+      async function initialize() {
         try {
-          const [tracts, ev, ej, solar] = await Promise.all([
-            loadGeoJSON(files.tracts),
-            loadGeoJSON(files.ev),
-            loadGeoJSON(files.ej),
-            loadGeoJSON(files.solar),
-          ]);
-
-          addSources({ tracts, ev, ej, solar });
-          addLayers();
-          addInteractions();
+          manifest = await loadJson(manifestPath);
+          buildMetricOptions();
+          await loadTracts();
           wireControls();
           updateTractPaint();
           updateLegend();
-          fitToData(tracts);
-          statusEl.classList.add("hidden");
+          fitToData(tractData);
+          renderRanking();
+          status("Loading EV stations...");
+          await ensureLayer("ev", true);
+          hideStatus();
         } catch (error) {
-          statusEl.textContent =
-            "Could not load local GeoJSON files. Run this page from a local web server, for example: python3 -m http.server 8000";
           console.error(error);
+          status("Could not load map data. Run this page from a local web server.");
         }
-      });
-
-      async function loadGeoJSON(path) {
-        const response = await fetch(path);
-        if (!response.ok) {
-          throw new Error(`${path}: ${response.status}`);
-        }
-        return response.json();
       }
 
-      function addSources(data) {
-        map.addSource("tracts", { type: "geojson", data: data.tracts });
-        map.addSource("ev", { type: "geojson", data: data.ev });
-        map.addSource("ej", { type: "geojson", data: data.ej });
-        map.addSource("solar", { type: "geojson", data: data.solar });
-      }
-
-      function addLayers() {
+      async function loadTracts() {
+        const layer = layerConfig("tracts");
+        tractData = await loadJson(layer.path);
+        map.addSource("tracts", { type: "geojson", data: tractData });
         map.addLayer({
           id: "tracts-fill",
           type: "fill",
           source: "tracts",
-          paint: {
-            "fill-color": "#d9ead9",
-            "fill-opacity": 0.68,
-          },
+          paint: { "fill-color": "#dcebdd", "fill-opacity": 0.72 },
         });
-
         map.addLayer({
           id: "tracts-outline",
           type: "line",
           source: "tracts",
-          paint: {
-            "line-color": "#62706c",
-            "line-width": 0.45,
-            "line-opacity": 0.55,
-          },
+          paint: { "line-color": "#4b5b57", "line-width": 0.45, "line-opacity": 0.55 },
         });
+        addPopup("tracts-fill", tractPopupHtml);
+        addHover("tracts-fill");
+        populateSearch();
+      }
 
-        map.addLayer({
-          id: "solar-fill",
-          type: "fill",
-          source: "solar",
-          paint: {
-            "fill-color": [
-              "interpolate",
-              ["linear"],
-              ["coalesce", ["to-number", ["get", "solar_capacity_dc_mw"]], 0],
-              0,
-              "rgba(255,255,255,0)",
-              10,
-              "#f5d58a",
-              50,
-              "#d79b2b",
-              120,
-              "#9c5b16",
-            ],
-            "fill-opacity": 0.48,
-          },
-        });
+      async function ensureLayer(id, visible) {
+        if (layerState[id]) {
+          setLayerVisibility(layerState[id].layers, visible);
+          return;
+        }
+        const layer = layerConfig(id);
+        status(`Loading ${labelForLayer(id)}...`);
+        const data = await loadJson(layer.path);
+        if (id === "ev") addEvLayer(data, visible);
+        if (id === "solar") addSolarLayer(data, visible);
+        if (id === "ej") addEjLayer(data, visible);
+      }
 
-        map.addLayer({
-          id: "solar-outline",
-          type: "line",
-          source: "solar",
-          paint: {
-            "line-color": "#9c5b16",
-            "line-width": 0.8,
-            "line-opacity": 0.4,
-          },
-        });
-
-        map.addLayer({
-          id: "ej-fill",
-          type: "fill",
-          source: "ej",
-          filter: ["==", ["get", "EJ"], "Yes"],
-          paint: {
-            "fill-color": "#b84d5d",
-            "fill-opacity": 0.2,
-          },
-        });
-
-        map.addLayer({
-          id: "ej-outline",
-          type: "line",
-          source: "ej",
-          filter: ["==", ["get", "EJ"], "Yes"],
-          paint: {
-            "line-color": "#b84d5d",
-            "line-width": 0.75,
-            "line-opacity": 0.68,
-          },
-        });
-
+      function addEvLayer(data, visible) {
+        map.addSource("ev", { type: "geojson", data });
         map.addLayer({
           id: "ev-points",
           type: "circle",
@@ -496,130 +519,275 @@
               "#1f6f9b",
               "#2d9fc4",
             ],
-            "circle-opacity": 0.86,
-            "circle-stroke-color": "#ffffff",
+            "circle-opacity": 0.84,
+            "circle-stroke-color": "#fff",
             "circle-stroke-width": 1,
           },
+          layout: { visibility: visible ? "visible" : "none" },
         });
+        layerState.ev = { layers: ["ev-points"] };
+        addPopup("ev-points", evPopupHtml);
+        addHover("ev-points");
+      }
+
+      function addSolarLayer(data, visible) {
+        map.addSource("solar", { type: "geojson", data });
+        const beforeLayer = map.getLayer("ev-points") ? "ev-points" : undefined;
+        map.addLayer(
+          {
+            id: "solar-fill",
+            type: "fill",
+            source: "solar",
+            paint: {
+              "fill-color": [
+                "interpolate",
+                ["linear"],
+                ["coalesce", ["to-number", ["get", "solar_capacity_dc_mw"]], 0],
+                0,
+                "rgba(255,255,255,0)",
+                25,
+                "#e6c16a",
+                75,
+                "#c88a22",
+                140,
+                "#8a5414",
+              ],
+              "fill-opacity": 0.4,
+            },
+            layout: { visibility: visible ? "visible" : "none" },
+          },
+          beforeLayer
+        );
+        map.addLayer(
+          {
+            id: "solar-outline",
+            type: "line",
+            source: "solar",
+            paint: { "line-color": "#8a5414", "line-width": 0.7, "line-opacity": 0.45 },
+            layout: { visibility: visible ? "visible" : "none" },
+          },
+          beforeLayer
+        );
+        layerState.solar = { layers: ["solar-fill", "solar-outline"] };
+        addPopup("solar-fill", solarPopupHtml);
+        addHover("solar-fill");
+      }
+
+      function addEjLayer(data, visible) {
+        map.addSource("ej", { type: "geojson", data });
+        const beforeLayer = map.getLayer("ev-points") ? "ev-points" : undefined;
+        map.addLayer(
+          {
+            id: "ej-fill",
+            type: "fill",
+            source: "ej",
+            filter: ["==", ["get", "EJ"], "Yes"],
+            paint: { "fill-color": "#aa4858", "fill-opacity": 0.18 },
+            layout: { visibility: visible ? "visible" : "none" },
+          },
+          beforeLayer
+        );
+        map.addLayer(
+          {
+            id: "ej-outline",
+            type: "line",
+            source: "ej",
+            filter: ["==", ["get", "EJ"], "Yes"],
+            paint: { "line-color": "#aa4858", "line-width": 0.65, "line-opacity": 0.72 },
+            layout: { visibility: visible ? "visible" : "none" },
+          },
+          beforeLayer
+        );
+        layerState.ej = { layers: ["ej-fill", "ej-outline"] };
+        addPopup("ej-fill", ejPopupHtml);
+        addHover("ej-fill");
       }
 
       function wireControls() {
-        tractMetricEl.addEventListener("change", (event) => {
-          activeTractMetric = event.target.value;
+        metricEl.addEventListener("change", (event) => {
+          activeMetric = event.target.value;
           updateTractPaint();
           updateLegend();
         });
-
-        document.getElementById("tractsToggle").addEventListener("change", (event) => {
-          setLayerVisibility(["tracts-fill", "tracts-outline"], event.target.checked);
-        });
-
-        document.getElementById("evToggle").addEventListener("change", (event) => {
-          setLayerVisibility(["ev-points"], event.target.checked);
-        });
-
-        document.getElementById("solarToggle").addEventListener("change", (event) => {
-          setLayerVisibility(["solar-fill", "solar-outline"], event.target.checked);
-        });
-
-        document.getElementById("ejToggle").addEventListener("change", (event) => {
-          setLayerVisibility(["ej-fill", "ej-outline"], event.target.checked);
-        });
-
         document.getElementById("tractOpacity").addEventListener("input", (event) => {
           map.setPaintProperty("tracts-fill", "fill-opacity", Number(event.target.value));
         });
+        document.getElementById("tractsToggle").addEventListener("change", (event) => {
+          setLayerVisibility(["tracts-fill", "tracts-outline"], event.target.checked);
+        });
+        document.getElementById("evToggle").addEventListener("change", (event) => {
+          ensureLayer("ev", event.target.checked).then(hideStatus);
+        });
+        document.getElementById("solarToggle").addEventListener("change", (event) => {
+          ensureLayer("solar", event.target.checked).then(hideStatus);
+        });
+        document.getElementById("ejToggle").addEventListener("change", (event) => {
+          ensureLayer("ej", event.target.checked).then(hideStatus);
+        });
+        document.getElementById("searchButton").addEventListener("click", selectSearchedTract);
+        searchEl.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") selectSearchedTract();
+        });
       }
 
-      function setLayerVisibility(layerIds, visible) {
-        for (const id of layerIds) {
-          map.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
-        }
+      function buildMetricOptions() {
+        metricEl.innerHTML = Object.entries(metrics)
+          .map(([value, config]) => `<option value="${value}">${config.label}</option>`)
+          .join("");
+        metricEl.value = activeMetric;
       }
 
       function updateTractPaint() {
-        const metric = tractMetrics[activeTractMetric];
-        const expression = ["interpolate", ["linear"], ["coalesce", ["to-number", ["get", activeTractMetric]], -9999]];
-        for (let i = 0; i < metric.stops.length; i += 1) {
-          expression.push(metric.stops[i], metric.colors[i]);
-        }
+        const metric = metrics[activeMetric];
+        const expression = [
+          "case",
+          ["==", ["get", activeMetric], ""],
+          "#eeeeee",
+          ["interpolate", ["linear"], ["to-number", ["get", activeMetric]]],
+        ];
+        metric.stops.forEach((stop, index) => expression.push(stop, metric.colors[index]));
         map.setPaintProperty("tracts-fill", "fill-color", expression);
       }
 
       function updateLegend() {
-        const metric = tractMetrics[activeTractMetric];
-        legendEl.innerHTML = "";
-        metric.stops.forEach((stop, index) => {
-          const row = document.createElement("div");
-          row.className = "legend-row";
-          row.innerHTML = `
-            <span class="swatch" style="background:${metric.colors[index]}"></span>
-            <span>${index === 0 ? "Lowest" : metric.format(stop)}</span>
-          `;
-          legendEl.appendChild(row);
-        });
-
-        const extra = [
-          ["#2d9fc4", "EV charging station"],
-          ["#1f6f9b", "DC fast charging available"],
-          ["rgba(184,77,93,0.35)", "Environmental justice block group"],
-          ["#d79b2b", "Higher municipal solar capacity"],
-        ];
-        for (const [color, label] of extra) {
-          const row = document.createElement("div");
-          row.className = "legend-row";
-          row.innerHTML = `<span class="swatch" style="background:${color}"></span><span>${label}</span>`;
-          legendEl.appendChild(row);
-        }
+        const metric = metrics[activeMetric];
+        legendEl.innerHTML = metric.stops
+          .map(
+            (stop, index) => `
+              <div class="legend-row">
+                <span class="swatch" style="background:${metric.colors[index]}"></span>
+                <span>${index === 0 ? "Lowest" : metric.format(stop)}</span>
+              </div>
+            `
+          )
+          .join("");
+        legendEl.insertAdjacentHTML(
+          "beforeend",
+          `
+            <div class="legend-row"><span class="swatch" style="background:#2d9fc4"></span><span>Public EV station</span></div>
+            <div class="legend-row"><span class="swatch" style="background:#1f6f9b"></span><span>DC fast charging</span></div>
+            <div class="legend-row"><span class="swatch" style="background:rgba(170,72,88,0.35)"></span><span>EJ block group</span></div>
+          `
+        );
       }
 
-      function addInteractions() {
-        addPopup("tracts-fill", (p) => `
-          <p class="popup-title">${escapeHtml(p.NAMELSAD || "Census tract")}</p>
-          ${popupRow("County", p.greater_boston_county)}
-          ${popupRow("SVI percentile", percentRank(p.svi_rpl_themes))}
-          ${popupRow("Median income", currency(p.median_household_income))}
-          ${popupRow("Poverty rate", percent(p.poverty_rate))}
-          ${popupRow("Renter rate", percent(p.renter_rate))}
-          ${popupRow("No vehicle rate", percent(p.no_vehicle_rate))}
-          ${popupRow("Multifamily share", percent(p.multifamily_share))}
-        `);
+      function populateSearch() {
+        tractOptionsEl.innerHTML = tractData.features
+          .map((feature) => {
+            const p = feature.properties;
+            return `<option value="${escapeHtml(p.tract_name)}, ${escapeHtml(p.county)}"></option>`;
+          })
+          .join("");
+      }
 
-        addPopup("ev-points", (p) => `
+      function selectSearchedTract() {
+        const value = searchEl.value.trim().toLowerCase();
+        if (!value) return;
+        const match = tractData.features.find((feature) => {
+          const p = feature.properties;
+          const label = `${p.tract_name}, ${p.county}`.toLowerCase();
+          return label === value || label.includes(value) || String(p.GEOID) === value;
+        });
+        if (!match) return;
+        selectTract(match);
+      }
+
+      function selectTract(feature) {
+        selectedFeature = feature;
+        renderSelectedSummary(feature.properties);
+        const bounds = featureBounds(feature);
+        map.fitBounds(bounds, { padding: 90, maxZoom: 13 });
+      }
+
+      function renderSelectedSummary(p) {
+        selectedSummaryEl.innerHTML = `
+          <h3>${escapeHtml(p.tract_name || p.GEOID)}</h3>
+          <p class="small">${escapeHtml(p.county || "")} County</p>
+          <div class="summary-grid">
+            ${summaryItem("Energy burden", percentWhole(p.doe_lead_energy_burden))}
+            ${summaryItem("Annual cost", currency(p.doe_lead_avg_annual_energy_cost))}
+            ${summaryItem("Nearest EV", miles(p.nearest_public_ev_station_miles))}
+            ${summaryItem("Solar capacity", `${number(p.municipal_solar_capacity_dc_mw)} MW`)}
+          </div>
+        `;
+      }
+
+      function summaryItem(label, value) {
+        return `
+          <div class="summary-item">
+            <span class="summary-value">${escapeHtml(value)}</span>
+            <span class="summary-label">${escapeHtml(label)}</span>
+          </div>
+        `;
+      }
+
+      function renderRanking() {
+        const ranked = tractData.features
+          .filter((feature) => isFiniteNumber(feature.properties.doe_lead_energy_burden))
+          .sort((a, b) => rankingScore(b.properties) - rankingScore(a.properties))
+          .slice(0, 8);
+        rankingEl.innerHTML = "";
+        ranked.forEach((feature) => {
+          const p = feature.properties;
+          const button = document.createElement("button");
+          button.type = "button";
+          button.innerHTML = `
+            <span>${escapeHtml(p.tract_name)}, ${escapeHtml(p.county)}</span>
+            <strong>${percentWhole(p.doe_lead_energy_burden)}</strong>
+          `;
+          button.addEventListener("click", () => selectTract(feature));
+          rankingEl.appendChild(button);
+        });
+      }
+
+      function rankingScore(p) {
+        return Number(p.doe_lead_energy_burden || 0) * 2 + Number(p.nearest_public_ev_station_miles || 0);
+      }
+
+      function tractPopupHtml(p) {
+        setTimeout(() => renderSelectedSummary(p), 0);
+        return `
+          <p class="popup-title">${escapeHtml(p.tract_name || "Census tract")}</p>
+          ${popupRow("County", p.county)}
+          ${popupRow("Energy burden", percentWhole(p.doe_lead_energy_burden))}
+          ${popupRow("Annual energy cost", currency(p.doe_lead_avg_annual_energy_cost))}
+          ${popupRow("Household income", currency(p.doe_lead_household_income))}
+          ${popupRow("Nearest EV station", miles(p.nearest_public_ev_station_miles))}
+          ${popupRow("EV stations", number(p.public_ev_station_count))}
+          ${popupRow("Municipal solar", `${number(p.municipal_solar_capacity_dc_mw)} MW`)}
+        `;
+      }
+
+      function evPopupHtml(p) {
+        return `
           <p class="popup-title">${escapeHtml(p.station_name || "EV charging station")}</p>
           ${popupRow("Address", [p.street_address, p.city, p.zip].filter(Boolean).join(", "))}
           ${popupRow("Network", p.ev_network)}
           ${popupRow("Level 2 ports", number(p.ev_level2_evse_num))}
           ${popupRow("DC fast ports", number(p.ev_dc_fast_num))}
           ${popupRow("Access", p.groups_with_access_code)}
-        `);
+        `;
+      }
 
-        addPopup("solar-fill", (p) => `
+      function solarPopupHtml(p) {
+        return `
           <p class="popup-title">${escapeHtml(titleCase(p.TOWN || "Municipality"))}</p>
           ${popupRow("County", titleCase(p.COUNTY))}
           ${popupRow("Solar projects", number(p.solar_project_count))}
           ${popupRow("Residential projects", number(p.residential_solar_project_count))}
           ${popupRow("Solar capacity", `${number(p.solar_capacity_dc_mw)} MW`)}
-          ${popupRow("Estimated production", `${number(p.estimated_annual_production_kwh)} kWh`)}
-        `);
+        `;
+      }
 
-        addPopup("ej-fill", (p) => `
+      function ejPopupHtml(p) {
+        return `
           <p class="popup-title">${escapeHtml(p.GEOGRAPHIC || "EJ block group")}</p>
           ${popupRow("Municipality", p.MUNICIPALI)}
           ${popupRow("EJ", p.EJ)}
           ${popupRow("Criteria", p.EJ_CRIT_DE)}
           ${popupRow("Minority share", `${number(p.PCT_MINORI)}%`)}
-          ${popupRow("Median household income", currency(p.BG_MHHI))}
-        `);
-
-        for (const id of ["tracts-fill", "ev-points", "solar-fill", "ej-fill"]) {
-          map.on("mouseenter", id, () => {
-            map.getCanvas().style.cursor = "pointer";
-          });
-          map.on("mouseleave", id, () => {
-            map.getCanvas().style.cursor = "";
-          });
-        }
+          ${popupRow("Median income", currency(p.BG_MHHI))}
+        `;
       }
 
       function addPopup(layerId, renderHtml) {
@@ -633,12 +801,51 @@
         });
       }
 
-      function fitToData(geojson) {
-        const bounds = new maplibregl.LngLatBounds();
-        for (const feature of geojson.features) {
-          extendBounds(bounds, feature.geometry.coordinates);
+      function addHover(layerId) {
+        map.on("mouseenter", layerId, () => {
+          map.getCanvas().style.cursor = "pointer";
+        });
+        map.on("mouseleave", layerId, () => {
+          map.getCanvas().style.cursor = "";
+        });
+      }
+
+      function setLayerVisibility(layerIds, visible) {
+        for (const id of layerIds) {
+          if (map.getLayer(id)) {
+            map.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
+          }
         }
-        map.fitBounds(bounds, { padding: 48, duration: 0 });
+      }
+
+      async function loadJson(path) {
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`${path}: ${response.status}`);
+        return response.json();
+      }
+
+      function layerConfig(id) {
+        return manifest.layers.find((layer) => layer.id === id);
+      }
+
+      function labelForLayer(id) {
+        return { ev: "EV stations", solar: "solar adoption", ej: "EJ block groups" }[id] || id;
+      }
+
+      function fitToData(geojson) {
+        map.fitBounds(featureCollectionBounds(geojson), { padding: 48, duration: 0 });
+      }
+
+      function featureCollectionBounds(geojson) {
+        const bounds = new maplibregl.LngLatBounds();
+        geojson.features.forEach((feature) => extendBounds(bounds, feature.geometry.coordinates));
+        return bounds;
+      }
+
+      function featureBounds(feature) {
+        const bounds = new maplibregl.LngLatBounds();
+        extendBounds(bounds, feature.geometry.coordinates);
+        return bounds;
       }
 
       function extendBounds(bounds, coordinates) {
@@ -646,9 +853,7 @@
           bounds.extend(coordinates);
           return;
         }
-        for (const item of coordinates) {
-          extendBounds(bounds, item);
-        }
+        coordinates.forEach((item) => extendBounds(bounds, item));
       }
 
       function popupRow(label, value) {
@@ -656,10 +861,14 @@
         return `<div class="popup-row"><span>${escapeHtml(label)}</span><strong>${escapeHtml(display)}</strong></div>`;
       }
 
-      function percent(value) {
+      function isFiniteNumber(value) {
+        return Number.isFinite(Number(value));
+      }
+
+      function percentWhole(value) {
         const num = Number(value);
         if (!Number.isFinite(num)) return "No data";
-        return `${Math.round(num * 1000) / 10}%`;
+        return `${num.toFixed(num % 1 === 0 ? 0 : 1)}%`;
       }
 
       function percentRank(value) {
@@ -678,6 +887,12 @@
         }).format(num);
       }
 
+      function miles(value) {
+        const num = Number(value);
+        if (!Number.isFinite(num)) return "No data";
+        return `${number(num)} mi`;
+      }
+
       function number(value) {
         const num = Number(value);
         if (!Number.isFinite(num)) return "0";
@@ -688,6 +903,15 @@
         return String(value || "")
           .toLowerCase()
           .replace(/\b\w/g, (letter) => letter.toUpperCase());
+      }
+
+      function status(message) {
+        statusEl.textContent = message;
+        statusEl.classList.remove("hidden");
+      }
+
+      function hideStatus() {
+        statusEl.classList.add("hidden");
       }
 
       function escapeHtml(value) {

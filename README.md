@@ -28,12 +28,14 @@ characteristics.
 ## Files
 
 - `index.html` - Main website content.
-- `map.html` - Interactive MapLibre map prototype.
+- `map.html` - Interactive MapLibre map with lazy-loaded research layers.
 - `styles.css` - Responsive visual design.
 - `scripts/download_research_data.py` - Downloads and converts public research
   datasets to GeoJSON.
-- `scripts/build_tract_analysis.py` - Builds the first tract-level analysis CSV.
-- `data/geojson/` - Generated GeoJSON files used by the map.
+- `scripts/build_tract_analysis.py` - Builds the tract analysis CSV and
+  optimized map-facing GeoJSON.
+- `data/geojson/` - Full generated GeoJSON files used as source data.
+- `data/map/` - Smaller GeoJSON files and a manifest used by `map.html`.
 - `data/analysis/greater_boston_tract_analysis.csv` - Derived tract analysis
   table used by the D3 chart.
 - `README.md` - Project and deployment notes.
@@ -46,15 +48,17 @@ Download or refresh the public map layers:
 python3 scripts/download_research_data.py
 ```
 
-Build the tract-level analysis table:
+Build the tract-level analysis table and map-ready data:
 
 ```bash
 python3 scripts/build_tract_analysis.py
 ```
 
 DOE LEAD 2022 is not downloaded automatically because the official archive is
-large. When a tract-level extract is available, place it at
-`data/raw/doe_lead_2022_tracts.csv` and rerun the analysis script.
+large. Export tract-level Massachusetts data from the DOE LEAD tool or archive,
+place it at `data/raw/doe_lead_2022_tracts.csv`, and rerun the analysis script.
+The script accepts the LEAD web-tool export where the real header starts after
+the metadata rows and joins `Geography ID` to tract `GEOID`.
 
 ## GitHub Pages Deployment
 

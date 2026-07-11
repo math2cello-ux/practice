@@ -1,7 +1,7 @@
 :root {
   --ink: #17322d;
   --muted: #5d706b;
-  --paper: #fbfaf5;
+  --paper: #fbfcfa;
   --panel: #ffffff;
   --line: #dfe8df;
   --green: #2f7d55;
@@ -9,7 +9,7 @@
   --mint: #dfeee2;
   --gold: #d99d2b;
   --blue: #2d6f88;
-  --shadow: 0 18px 45px rgba(23, 50, 45, 0.12);
+  --shadow: 0 12px 28px rgba(23, 50, 45, 0.09);
 }
 
 * {
@@ -76,18 +76,18 @@ a {
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
-  gap: 36px;
+  gap: 28px;
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 76px 0 68px;
+  padding: 56px 0 50px;
   align-items: center;
 }
 
 .hero-content h1 {
   max-width: 840px;
   margin: 0;
-  font-size: clamp(2.6rem, 6vw, 5.6rem);
-  line-height: 0.95;
+  font-size: clamp(2.3rem, 5.2vw, 4.8rem);
+  line-height: 1;
   letter-spacing: 0;
 }
 
@@ -141,9 +141,7 @@ a {
   gap: 14px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background:
-    linear-gradient(135deg, rgba(223, 238, 226, 0.8), rgba(255, 255, 255, 0.95)),
-    radial-gradient(circle at top right, rgba(45, 111, 136, 0.18), transparent 45%);
+  background: var(--panel);
   padding: 18px;
   box-shadow: var(--shadow);
 }
@@ -172,7 +170,7 @@ a {
 .section {
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 68px 0;
+  padding: 54px 0;
 }
 
 .band {
